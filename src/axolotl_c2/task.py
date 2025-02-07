@@ -32,18 +32,32 @@ class Task(ABC):
 
 class TaskShell(Task):
     taskType = "shell"
-
-    def __init__(self, taskPath, command):
-        # Private members
+    
+    def __init__(self, taskPath, command='whoami'):
         super().__init__(taskPath)
+        # Private Members
         self._command = command
+        self._result = ""
+        
+        with open(self.taskPath, 'w') as f:
+            f.write(f"{self.taskType}:{self._command}")
 
-    def writeTask(self):
-        with open(self.taskPath, "w") as f:
-            f.write(f"{self.taskType}: {self._command}")
+    # Public Methods
+    def writeTask(self, command):
+        self._command = command
+        with open(self.taskPath, 'w') as f:
+            f.write(f"{self.taskType}:{self._command}")
+
+    def getResult(self):
+        print(self._result)
+
+        return self._result
+
+    def receiveResult(self, result):
+        self._result = result
 
     def clearTask(self):
         if os.path.exists(self.taskPath):
             os.remove(self.taskPath)
         else:
-            pass
+            print("[Task: clearTask] Error Path for task doesn't exist")           
