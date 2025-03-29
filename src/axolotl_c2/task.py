@@ -2,20 +2,8 @@ import os
 from abc import ABC, abstractmethod
 
 class Task(ABC):
-    def __init__(self, taskPath):
-        # Private members
-        self._taskPath = taskPath
-    
-    @property
-    def taskPath(self):
-        return self._taskPath
-
-    @taskPath.setter
-    def taskPath(self, newPath):
-        if not isinstance(newPath, str) or not newPath:
-            raise ValueError("[Task: setter] : Path need to be not empty.")
-        
-        self._taskPath = newPath
+    def __init__(self):
+        pass
 
     @property
     @abstractmethod
@@ -23,7 +11,11 @@ class Task(ABC):
         pass
 
     @abstractmethod
-    def writeTask(self):
+    def setTask(self):
+        pass
+
+    @abstractmethod
+    def getTask(self):
         pass
 
     @abstractmethod
@@ -33,31 +25,24 @@ class Task(ABC):
 class TaskShell(Task):
     taskType = "shell"
     
-    def __init__(self, taskPath, command='whoami'):
-        super().__init__(taskPath)
+    def __init__(self, command='whoami'):
+        super().__init__()
         # Private Members
         self._command = command
         self._result = ""
-        
-        with open(self.taskPath, 'w') as f:
-            f.write(f"{self.taskType}:{self._command}")
 
     # Public Methods
-    def writeTask(self, command):
+    def setTask(self, command):
         self._command = command
-        with open(self.taskPath, 'w') as f:
-            f.write(f"{self.taskType}:{self._command}")
+
+    def getTask(self):
+        return self._command
 
     def getResult(self):
-        print(self._result)
-
         return self._result
 
     def receiveResult(self, result):
         self._result = result
 
     def clearTask(self):
-        if os.path.exists(self.taskPath):
-            os.remove(self.taskPath)
-        else:
-            print("[Task: clearTask] Error Path for task doesn't exist")           
+        self._command = ""           
