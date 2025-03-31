@@ -1,5 +1,7 @@
+import os
+
 class Agent:
-    def __init__(self, name, remoteIp, hostname, encryptionKey, path):
+    def __init__(self, name, remoteIp, hostname, encryptionKey, path, listener):
         # Private Members
         self._remoteIp           = remoteIp
         self._hostname           = hostname
@@ -8,8 +10,15 @@ class Agent:
         self._task               = None
         self._name               = name
         self._path               = path
+        self._listener           = listener
+
+        if not os.path.exists(self._path):
+            os.makedirs(self._path)
 
     # Public Methods
+    def getListener(self):
+        return self._listener
+
     def getPath(self):
         return self._path
 
