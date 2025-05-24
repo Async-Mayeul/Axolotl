@@ -7,6 +7,22 @@
             "key": "1234",
             "path": "data/listeners/hello/agents/world/",
             "listener": "hello"
+        },
+        {
+            "name": "raph",
+            "ip": "1.1.1.1",
+            "hostname": "archlinux",
+            "key": "1234",
+            "path": "data/listeners/test/agents/raph/",
+            "listener": "test"
+        },
+        {
+            "name": "raph",
+            "ip": "1.1.1.1",
+            "hostname": "archlinux",
+            "key": "1234",
+            "path": "data/listeners/test/agents/raph/",
+            "listener": "test"
         }
     ]
 }
