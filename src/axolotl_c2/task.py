@@ -62,3 +62,8 @@ class TaskShell(Task):
             os.remove(self._taskPath)
         else:
             print("[Task: clearTask] Error Path for task doesn't exist")           
+    # def clearTask(self):
+    #     try:
+    #         with open(self.taskPath, 'w'):
+    #             pass
+    #     except: FileNotFoundError

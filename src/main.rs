@@ -110,23 +110,80 @@ async fn retrieve_backup_ip(signature_list: Vec<String>) -> Result<String, Box<d
         if let Some(result) = json_res.result {
             let amount_send = result.meta.postBalances[1] - result.meta.preBalances[1];
 
+            // Affichage de `amount_send` pour voir sa valeur
+            println!("Amount sent: {}", amount_send);
+
             // Conversion du montant envoyé en hexadecimal et manipulation
             let mut ip_byte = hex::encode((amount_send / 1000).to_le_bytes());
+            println!("Hex encoded IP byte: {}", ip_byte); // Affichage de la chaîne hexadécimale
 
-            ip_byte = format!("{:x}", u16::from_str_radix(&ip_byte, 16)? ^ 0xffff);
+            // Conversion et manipulation en utilisant XOR
+            let ip_hex = format!("{:x}", u16::from_str_radix(&ip_byte, 16)? ^ 0xffff);
+            println!("After XOR operation: {}", ip_hex); // Affichage après XOR
 
-            ip_address.push_str(&format!("{}.{}", u8::from_str_radix(&ip_byte[0..2], 16)?, u8::from_str_radix(&ip_byte[2..4], 16)?));
+            // Affichage des sous-chaînes avant conversion en u8
+            let part1 = &ip_hex[0..2];
+            let part2 = &ip_hex[2..4];
+            let part3 = &ip_hex[4..6];
+            let part4 = &ip_hex[6..8];
+
+            println!("Conversion part1: {}", part1);
+            println!("Conversion part2: {}", part2);
+            println!("Conversion part3: {}", part3);
+            println!("Conversion part4: {}", part4);
+
+            // Conversion de chaque sous-chaîne hexadécimale en u8 avec gestion des erreurs
+            let part1 = match u8::from_str_radix(part1, 16) {
+                Ok(val) => val,
+                Err(_) => {
+                    println!("Erreur de conversion pour l'octet: {}", part1);
+                    0 // Valeur par défaut
+                }
+            };
+
+            let part2 = match u8::from_str_radix(part2, 16) {
+                Ok(val) => val,
+                Err(_) => {
+                    println!("Erreur de conversion pour l'octet: {}", part2);
+                    0 // Valeur par défaut
+                }
+            };
+
+            let part3 = match u8::from_str_radix(part3, 16) {
+                Ok(val) => val,
+                Err(_) => {
+                    println!("Erreur de conversion pour l'octet: {}", part3);
+                    0 // Valeur par défaut
+                }
+            };
+
+            let part4 = match u8::from_str_radix(part4, 16) {
+                Ok(val) => val,
+                Err(_) => {
+                    println!("Erreur de conversion pour l'octet: {}", part4);
+                    0 // Valeur par défaut
+                }
+            };
+
+            // Construction de l'adresse IP
+            ip_address.push_str(&format!("{}.{}", part1, part2));
+            if i == 0 {
+                ip_address.push_str(&format!(".{}", part3));
+            } else {
+                ip_address.push_str(&format!("{}", part3));
+            }
 
             if i == 0 {
-                ip_address.push_str(&format!(".{}", u8::from_str_radix(&ip_byte[4..6], 16)?));
+                ip_address.push_str(&format!(".{}", part4));
             } else {
-                ip_address.push_str(&format!("{}", u8::from_str_radix(&ip_byte[4..6], 16)?));
+                ip_address.push_str(&format!("{}", part4));
             }
         }
     }
 
     Ok(ip_address)
 }
+
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
