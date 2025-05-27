@@ -29,3 +29,4 @@ htmlcov/
 dist/
 build/
 *.egg-info/
+./src/axolotl_c2/data/

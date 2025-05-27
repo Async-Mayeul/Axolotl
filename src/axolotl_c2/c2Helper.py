@@ -23,10 +23,16 @@ def startListener(args):
     return 0
 
 def sendTask(command, args):
-    agent = agentsList[args[1]]
+    agent = agentsList[args[0]]
+    commandContent = ""
     if command == "shell":
-        task = TaskShell(agent.getPath(), args[0])
-        agentsList[args[1]].setTask(task)
+        for i in range(1, len(args)):
+            if i == 1:
+                commandContent = args[i]
+            else:
+                commandContent = commandContent + " " + args[i]
+        task = TaskShell(agent.getPath(), commandContent)
+        agentsList[args[0]].setTask(task)
         listenersList[agent.getListener()].setAgentsList(agentsList)
 
     return 0

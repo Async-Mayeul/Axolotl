@@ -45,8 +45,8 @@ def manageAgents(command, args, menuList):
         updateAgentsList()
         listAgents()
     elif command == "shell":
-        if len(args) != 2:
-            print("\tYou need to specify the command and the name of the agent\n")
+        if len(args) < 2:
+            print("\tYou need to specify the name of agent and the command\n")
         else:
             updateAgentsList()
             sendTask(command, args)
@@ -99,7 +99,7 @@ def initCLI():
     ListenerMenu.registerCmd("help", "Show help.", "")
     ListenerMenu.registerCmd("exit", "Quit Axolotl C2.", "")
     AgentMenu = Menu("Agents")
-    AgentMenu.registerCmd("shell", "Execute command on victim device.", "<command> <agent_name>")
+    AgentMenu.registerCmd("shell", "Execute command on victim device.", "<agent_name> <command>")
     AgentMenu.registerCmd("list", "list agents.", "")
     AgentMenu.registerCmd("home", "Return to main menu.", "")
     AgentMenu.registerCmd("help", "Show help.", "")
