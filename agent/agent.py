@@ -140,11 +140,13 @@ class Agent:
         return ip_address
        
 def main():
-    wallet_addr = "2Hj5EwbGDRjsE6xHjtJcAmhDVqAgWzVrv9DkAJqWnint"
-    ip = "127.0.0.1"
-    port = 4444
+    WALLET = "CUSTOM_WALLET"
+    IP = "CUSTOM_IP"
+    PORT = "CUSTOM_PORT"
+    KEY = "CUSTOM_KEY"
+    NAME = "CUSTOM_NAME"
     hostname = os.uname()[1]
-    agent = Agent(hostname, ip, port, "raph", "1234")
+    agent = Agent(hostname, IP, int(PORT), NAME, KEY)
 
     # Enregistrer l'agent
     agent.register()

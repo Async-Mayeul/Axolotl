@@ -1,4 +1,5 @@
 import os
+import PyInstaller.__main__
 
 class Agent:
     """
